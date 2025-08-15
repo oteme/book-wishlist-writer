@@ -1,0 +1,22 @@
+# AWS Configuration
+aws_region = "ap-northeast-1"
+
+# Project Configuration
+project_name = "tweet-wishlist"
+stage        = "prod"
+
+# GitHub Configuration (Required)
+github_owner  = "oteme"
+github_repo   = "my_vault"
+github_branch = "main"
+
+# Vault Paths
+vault_wishlist_path = "wishlist.md"
+vault_assets_dir    = "assets"
+
+# Lambda Configuration
+lambda_timeout     = 60
+lambda_memory_size = 512
+
+# Logging
+log_retention_days = 30
