@@ -134,28 +134,17 @@ def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryTyp
     """
     lines = []
     
-    # Main entry line
-    main_line = f"- {entry.date} [{entry.title}]({entry.url})"
-    if entry.note:
-        main_line += f" note: {entry.note}"
-    lines.append(main_line)
+    # Original link at the top
+    lines.append(entry.url)
     
     # Tweet text
     sanitized_text = sanitize_text_for_markdown(entry.tweet_text)
     text_lines = sanitized_text.split('\n')
-    if len(text_lines) == 1:
-        lines.append(f"  - text: {text_lines[0]}")
-    else:
-        lines.append("  - text: |")
-        for text_line in text_lines:
-            lines.append(f"    {text_line}")
+    for text_line in text_lines:
+        lines.append(text_line)
     
-    # Original link
-    lines.append(f"  - original: {entry.url}")
-    
-    # Images
+    # Images (without bullet points)
     if entry.images:
-        lines.append("  - images:")
         for image in entry.images:
             # Use different assets directory based on entry type
             assets_dir = os.environ.get(
@@ -167,7 +156,10 @@ def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryTyp
                 image.filename,
                 assets_dir
             )
-            lines.append(f"    - ![[{image_path}]]")
+            lines.append(f"![[{image_path}]]")
+    
+    # Add separator line
+    lines.append("---")
     
     return '\n'.join(lines)
 

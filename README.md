@@ -228,26 +228,22 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
 ### 書籍ツイート（`wishlist.md`）
 
 ```markdown
-- 2024-01-15 [@username](https://x.com/username/status/123) note: 読みたい本
-  - text: |
-    ツイート本文の1行目
-    ツイート本文の2行目
-  - original: https://x.com/username/status/123
-  - images:
-    - ![[assets/2024-01/123_1.jpg]]
-    - ![[assets/2024-01/123_2.png]]
+https://x.com/username/status/123
+ツイート本文の1行目
+ツイート本文の2行目
+![[assets/2024-01/123_1.jpg]]
+![[assets/2024-01/123_2.png]]
+---
 ```
 
 ### いいねツイート（`Liked/tweets.md`）
 
 ```markdown
-- 2024-01-15 [@username](https://x.com/username/status/456) note: メモ
-  - text: |
-    ツイート本文
-    複数行の場合はこのように表示
-  - original: https://x.com/username/status/456
-  - images:
-    - ![[Liked/assets/2024-01/456_1.jpg]]
+https://x.com/username/status/456
+ツイート本文
+複数行の場合はこのように表示
+![[Liked/assets/2024-01/456_1.jpg]]
+---
 ```
 
 ## 開発

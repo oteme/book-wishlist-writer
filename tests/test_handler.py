@@ -99,14 +99,12 @@ class TestFormatWishlistEntry:
         
         result = format_wishlist_entry(entry)
         expected_lines = [
-            '- 2024-01-15 [@testuser](https://x.com/testuser/status/123) note: Great book recommendation',
-            '  - text: |',
-            '    Check out this book!',
-            '    It\'s amazing!',
-            '  - original: https://x.com/testuser/status/123',
-            '  - images:',
-            '    - ![[assets/2025-08/123_1.jpg]]',
-            '    - ![[assets/2025-08/123_2.jpg]]'
+            'https://x.com/testuser/status/123',
+            'Check out this book!',
+            'It\'s amazing!',
+            '![[assets/2025-08/123_1.jpg]]',
+            '![[assets/2025-08/123_2.jpg]]',
+            '---'
         ]
         assert result == '\n'.join(expected_lines)
     
@@ -123,9 +121,9 @@ class TestFormatWishlistEntry:
         
         result = format_wishlist_entry(entry)
         expected_lines = [
-            '- 2024-01-15 [@testuser](https://x.com/testuser/status/123)',
-            '  - text: Simple tweet',
-            '  - original: https://x.com/testuser/status/123'
+            'https://x.com/testuser/status/123',
+            'Simple tweet',
+            '---'
         ]
         assert result == '\n'.join(expected_lines)
 
