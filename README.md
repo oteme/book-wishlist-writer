@@ -14,12 +14,55 @@ AWS Lambda + API Gateway + Terraformによる、TwitterツイートからObsidia
 
 ## アーキテクチャ
 
-```
-Client → API Gateway → Lambda → vxtwitter API
-                    ↓
-              GitHub API (Contents API)
-                    ↓
-            Obsidian Vault Repository
+```mermaid
+graph TB
+    subgraph "Client Side"
+        iOS[iOS共有メニュー]
+        Client[任意のクライアント]
+    end
+    
+    subgraph "AWS Infrastructure"
+        AG[API Gateway<br/>POST /ingest<br/>POST /liked]
+        Lambda[Lambda Function<br/>tweet-wishlist-prod]
+        SM[Secrets Manager<br/>GitHub Token]
+        CW[CloudWatch Logs]
+    end
+    
+    subgraph "External APIs"
+        VXT[vxtwitter API<br/>ツイート取得]
+        GH[GitHub API<br/>Contents API]
+    end
+    
+    subgraph "GitHub Repository"
+        Vault[Obsidian Vault]
+        Books[Books/Wishlist.md]
+        Liked[Liked/tweets.md]
+        Assets1[Books/assets/]
+        Assets2[Liked/assets/]
+    end
+    
+    iOS --> AG
+    Client --> AG
+    AG --> Lambda
+    Lambda --> SM
+    Lambda --> VXT
+    Lambda --> GH
+    Lambda --> CW
+    GH --> Vault
+    Vault --> Books
+    Vault --> Liked
+    Vault --> Assets1
+    Vault --> Assets2
+    
+    classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#fff
+    classDef external fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:#fff
+    classDef github fill:#24292e,stroke:#586069,stroke-width:2px,color:#fff
+    classDef client fill:#2196F3,stroke:#0D47A1,stroke-width:2px,color:#fff
+    
+    class AG,Lambda,SM,CW aws
+    class VXT,GH external
+    class Vault,Books,Liked,Assets1,Assets2 github
+    class iOS,Client client
 ```
 
 ## セットアップ
