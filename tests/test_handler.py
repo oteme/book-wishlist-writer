@@ -103,8 +103,8 @@ class TestFormatWishlistEntry:
             '  - text: Check out this book!\\nIt\'s amazing!',
             '  - original: https://x.com/testuser/status/123',
             '  - images:',
-            '    - [[assets/2025-08/123_1.jpg]]',
-            '    - [[assets/2025-08/123_2.jpg]]'
+            '    - ![[assets/2025-08/123_1.jpg]]',
+            '    - ![[assets/2025-08/123_2.jpg]]'
         ]
         assert result == '\n'.join(expected_lines)
     

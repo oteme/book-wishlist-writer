@@ -189,8 +189,8 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
   - text: ツイート本文（改行は\\nに変換）
   - original: https://x.com/username/status/123
   - images:
-    - [[assets/2024-01/123_1.jpg]]
-    - [[assets/2024-01/123_2.png]]
+    - ![[assets/2024-01/123_1.jpg]]
+    - ![[assets/2024-01/123_2.png]]
 ```
 
 ### いいねツイート（`Liked/tweets.md`）
@@ -200,7 +200,7 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
   - text: ツイート本文
   - original: https://x.com/username/status/456
   - images:
-    - [[Liked/assets/2024-01/456_1.jpg]]
+    - ![[Liked/assets/2024-01/456_1.jpg]]
 ```
 
 ## 開発

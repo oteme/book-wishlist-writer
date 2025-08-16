@@ -161,7 +161,7 @@ def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryTyp
                 image.filename,
                 assets_dir
             )
-            lines.append(f"    - [[{image_path}]]")
+            lines.append(f"    - ![[{image_path}]]")
     
     return '\n'.join(lines)
 
