@@ -90,7 +90,7 @@ class TestFormatWishlistEntry:
             title='@testuser',
             url='https://x.com/testuser/status/123',
             note='Great book recommendation',
-            tweet_text='Check out this book!\nIt\'s amazing!',
+            tweet_text='Check out this book!\\nIt\'s amazing!',
             images=[
                 TweetImage(url='https://example.com/1.jpg', filename='123_1.jpg'),
                 TweetImage(url='https://example.com/2.jpg', filename='123_2.jpg')
@@ -100,7 +100,9 @@ class TestFormatWishlistEntry:
         result = format_wishlist_entry(entry)
         expected_lines = [
             '- 2024-01-15 [@testuser](https://x.com/testuser/status/123) note: Great book recommendation',
-            '  - text: Check out this book!\\nIt\'s amazing!',
+            '  - text: |',
+            '    Check out this book!',
+            '    It\'s amazing!',
             '  - original: https://x.com/testuser/status/123',
             '  - images:',
             '    - ![[assets/2025-08/123_1.jpg]]',

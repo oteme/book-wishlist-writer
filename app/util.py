@@ -85,19 +85,25 @@ def get_year_month(date: datetime) -> str:
 
 
 def sanitize_text_for_markdown(text: str) -> str:
-    """Sanitize text for single-line markdown format.
+    """Sanitize text for markdown format.
     
     Args:
         text: Raw text
         
     Returns:
-        Sanitized text with newlines replaced by \\n
+        Sanitized text with proper line breaks
     """
-    # Replace actual newlines with escaped newlines
-    text = text.replace('\n', '\\n')
-    # Remove excessive whitespace
-    text = ' '.join(text.split())
-    return text
+    # First, handle escaped newlines (\n) by converting them to actual newlines
+    text = text.replace('\\n', '\n')
+    
+    # Clean up excessive whitespace on each line while preserving line breaks
+    lines = text.split('\n')
+    cleaned_lines = [' '.join(line.split()) for line in lines]
+    
+    # Remove empty lines and rejoin
+    cleaned_lines = [line for line in cleaned_lines if line.strip()]
+    
+    return '\n'.join(cleaned_lines)
 
 
 def determine_file_extension(url: str) -> str:

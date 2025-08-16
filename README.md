@@ -229,7 +229,9 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
 
 ```markdown
 - 2024-01-15 [@username](https://x.com/username/status/123) note: 読みたい本
-  - text: ツイート本文（改行は\\nに変換）
+  - text: |
+    ツイート本文の1行目
+    ツイート本文の2行目
   - original: https://x.com/username/status/123
   - images:
     - ![[assets/2024-01/123_1.jpg]]
@@ -240,7 +242,9 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
 
 ```markdown
 - 2024-01-15 [@username](https://x.com/username/status/456) note: メモ
-  - text: ツイート本文
+  - text: |
+    ツイート本文
+    複数行の場合はこのように表示
   - original: https://x.com/username/status/456
   - images:
     - ![[Liked/assets/2024-01/456_1.jpg]]

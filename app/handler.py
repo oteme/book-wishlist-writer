@@ -142,7 +142,13 @@ def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryTyp
     
     # Tweet text
     sanitized_text = sanitize_text_for_markdown(entry.tweet_text)
-    lines.append(f"  - text: {sanitized_text}")
+    text_lines = sanitized_text.split('\n')
+    if len(text_lines) == 1:
+        lines.append(f"  - text: {text_lines[0]}")
+    else:
+        lines.append("  - text: |")
+        for text_line in text_lines:
+            lines.append(f"    {text_line}")
     
     # Original link
     lines.append(f"  - original: {entry.url}")
