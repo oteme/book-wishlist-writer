@@ -9,7 +9,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'app'))
 
-from handler import lambda_handler, validate_request, check_api_key, format_wishlist_entry
+from handler import lambda_handler, validate_request, check_api_key, format_wishlist_entry, get_entry_type, EntryType
 from model import WishlistEntry, TweetImage, Tweet
 
 
@@ -101,6 +101,7 @@ class TestFormatWishlistEntry:
         expected_lines = [
             '- 2024-01-15 [@testuser](https://x.com/testuser/status/123) note: Great book recommendation',
             '  - text: Check out this book!\\nIt\'s amazing!',
+            '  - original: https://x.com/testuser/status/123',
             '  - images:',
             '    - [[assets/2025-08/123_1.jpg]]',
             '    - [[assets/2025-08/123_2.jpg]]'
@@ -121,9 +122,33 @@ class TestFormatWishlistEntry:
         result = format_wishlist_entry(entry)
         expected_lines = [
             '- 2024-01-15 [@testuser](https://x.com/testuser/status/123)',
-            '  - text: Simple tweet'
+            '  - text: Simple tweet',
+            '  - original: https://x.com/testuser/status/123'
         ]
         assert result == '\n'.join(expected_lines)
+
+
+class TestGetEntryType:
+    """Test entry type detection."""
+    
+    def test_book_entry_type(self):
+        """Test default book entry type."""
+        event = {'rawPath': '/ingest'}
+        assert get_entry_type(event) == EntryType.BOOK
+        
+        event = {'path': '/ingest'}
+        assert get_entry_type(event) == EntryType.BOOK
+        
+        event = {}
+        assert get_entry_type(event) == EntryType.BOOK
+    
+    def test_liked_entry_type(self):
+        """Test liked entry type."""
+        event = {'rawPath': '/liked'}
+        assert get_entry_type(event) == EntryType.LIKED
+        
+        event = {'path': '/liked'}
+        assert get_entry_type(event) == EntryType.LIKED
 
 
 class TestLambdaHandler:

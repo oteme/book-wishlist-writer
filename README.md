@@ -7,8 +7,10 @@ AWS Lambda + API Gateway + Terraformによる、TwitterツイートからObsidia
 - iOSの共有メニューや任意クライアントからTwitter/X URLを受信
 - vxtwitter APIを使用してツイート本文・画像を取得
 - GitHubのObsidian Vaultリポジトリ内の`wishlist.md`に自動追記
+- いいねしたツイートを別ファイル（`Liked/tweets.md`）に保存可能
 - 画像ファイルを`assets/YYYY-MM/`に自動アップロード
 - 競合回避機能（指数バックオフリトライ）
+- 元のツイートリンクを保存形式に含む
 
 ## アーキテクチャ
 
@@ -63,9 +65,13 @@ github_owner  = "your-github-username"     # あなたのGitHubユーザー名
 github_repo   = "your-vault-repo"          # VaultリポジトリName
 github_branch = "main"
 
-# Vault Paths
+# Vault Paths - Books
 vault_wishlist_path = "Books\\Wishlist.md"  # ウィッシュリストファイルパス
 vault_assets_dir    = "Books\\assets"       # 画像保存ディレクトリ
+
+# Vault Paths - Liked Tweets
+vault_liked_path       = "Liked\\tweets.md"    # いいねツイート保存パス
+vault_liked_assets_dir = "Liked\\assets"       # いいねツイート画像保存ディレクトリ
 
 # Lambda Configuration
 lambda_timeout     = 60
@@ -135,7 +141,11 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
 
 ### POST /ingest
 
-ツイートをウィッシュリストに追加
+書籍関連のツイートをウィッシュリストに追加
+
+### POST /liked
+
+いいねしたツイートを保存
 
 **Request:**
 ```json
@@ -172,14 +182,25 @@ curl -X POST "https://your-api-id.execute-api.ap-northeast-1.amazonaws.com/inges
 
 ## 出力形式
 
-`wishlist.md`に以下形式で追記：
+### 書籍ツイート（`wishlist.md`）
 
 ```markdown
 - 2024-01-15 [@username](https://x.com/username/status/123) note: 読みたい本
   - text: ツイート本文（改行は\\nに変換）
+  - original: https://x.com/username/status/123
   - images:
     - [[assets/2024-01/123_1.jpg]]
     - [[assets/2024-01/123_2.png]]
+```
+
+### いいねツイート（`Liked/tweets.md`）
+
+```markdown
+- 2024-01-15 [@username](https://x.com/username/status/456) note: メモ
+  - text: ツイート本文
+  - original: https://x.com/username/status/456
+  - images:
+    - [[Liked/assets/2024-01/456_1.jpg]]
 ```
 
 ## 開発
@@ -214,6 +235,8 @@ export GITHUB_REPO=your-vault-repo
 export GITHUB_BRANCH=main
 export VAULT_WISHLIST_PATH="Books\\Wishlist.md"
 export VAULT_ASSETS_DIR="Books\\assets"
+export VAULT_LIKED_PATH="Liked\\tweets.md"
+export VAULT_LIKED_ASSETS_DIR="Liked\\assets"
 
 # ローカルテスト（mockを使用）
 python -m pytest tests/

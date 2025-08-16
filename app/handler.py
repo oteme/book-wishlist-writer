@@ -4,6 +4,7 @@ import logging
 import os
 import boto3
 from datetime import datetime
+from enum import Enum
 from typing import Dict, Any, Optional, List
 import requests
 
@@ -23,6 +24,12 @@ logger.setLevel(logging.INFO)
 
 # Initialize AWS clients
 secrets_client = boto3.client('secretsmanager')
+
+
+class EntryType(Enum):
+    """Type of wishlist entry."""
+    BOOK = "book"
+    LIKED = "liked"
 
 
 def get_secret(secret_name: str) -> Dict[str, str]:
@@ -79,6 +86,23 @@ def validate_request(event: Dict[str, Any]) -> tuple:
     return url, note
 
 
+def get_entry_type(event: Dict[str, Any]) -> EntryType:
+    """Determine entry type from Lambda event path.
+    
+    Args:
+        event: Lambda event
+        
+    Returns:
+        EntryType enum value
+    """
+    # API Gateway v2 uses rawPath, v1 uses path
+    path = event.get('rawPath', event.get('path', ''))
+    
+    if '/liked' in path:
+        return EntryType.LIKED
+    return EntryType.BOOK
+
+
 def check_api_key(event: Dict[str, Any], expected_key: Optional[str]) -> bool:
     """Check API key if configured.
     
@@ -98,11 +122,12 @@ def check_api_key(event: Dict[str, Any], expected_key: Optional[str]) -> bool:
     return provided_key == expected_key
 
 
-def format_wishlist_entry(entry: WishlistEntry) -> str:
+def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryType.BOOK) -> str:
     """Format wishlist entry as markdown.
     
     Args:
         entry: WishlistEntry object
+        entry_type: Type of entry (BOOK or LIKED)
         
     Returns:
         Formatted markdown string
@@ -119,14 +144,22 @@ def format_wishlist_entry(entry: WishlistEntry) -> str:
     sanitized_text = sanitize_text_for_markdown(entry.tweet_text)
     lines.append(f"  - text: {sanitized_text}")
     
+    # Original link
+    lines.append(f"  - original: {entry.url}")
+    
     # Images
     if entry.images:
         lines.append("  - images:")
         for image in entry.images:
+            # Use different assets directory based on entry type
+            assets_dir = os.environ.get(
+                'VAULT_LIKED_ASSETS_DIR' if entry_type == EntryType.LIKED else 'VAULT_ASSETS_DIR',
+                'Liked/assets' if entry_type == EntryType.LIKED else 'assets'
+            )
             image_path = generate_image_path(
                 datetime.now(),
                 image.filename,
-                os.environ.get('VAULT_ASSETS_DIR', 'assets')
+                assets_dir
             )
             lines.append(f"    - [[{image_path}]]")
     
@@ -188,6 +221,10 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         logger.info(f"Processing tweet {tweet_id}")
         
+        # Determine entry type
+        entry_type = get_entry_type(event)
+        logger.info(f"Entry type: {entry_type.value}")
+        
         # Initialize clients
         twitter_client = TwitterClient()
         github_client = GitHubClient(
@@ -241,10 +278,15 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 logger.info(f"Downloading image {image.url}")
                 image_data = download_image(image.url)
                 
+                # Use different assets directory based on entry type
+                assets_dir = os.environ.get(
+                    'VAULT_LIKED_ASSETS_DIR' if entry_type == EntryType.LIKED else 'VAULT_ASSETS_DIR',
+                    'Liked/assets' if entry_type == EntryType.LIKED else 'assets'
+                )
                 image_path = generate_image_path(
                     current_date,
                     image.filename,
-                    os.environ.get('VAULT_ASSETS_DIR', 'assets')
+                    assets_dir
                 )
                 
                 logger.info(f"Uploading image to {image_path}")
@@ -260,14 +302,17 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Continue with other images
         
         # Append to wishlist
-        wishlist_path = os.environ.get('VAULT_WISHLIST_PATH', 'wishlist.md')
-        wishlist_content = format_wishlist_entry(entry)
+        wishlist_path = os.environ.get(
+            'VAULT_LIKED_PATH' if entry_type == EntryType.LIKED else 'VAULT_WISHLIST_PATH',
+            'Liked/tweets.md' if entry_type == EntryType.LIKED else 'wishlist.md'
+        )
+        wishlist_content = format_wishlist_entry(entry, entry_type)
         
         try:
             github_client.append_to_file(
                 path=wishlist_path,
                 content_to_append=wishlist_content + '\n',
-                message=f"chore: append wishlist {format_date(current_date)} ({tweet_id})"
+                message=f"chore: append {'liked tweet' if entry_type == EntryType.LIKED else 'wishlist'} {format_date(current_date)} ({tweet_id})"
             )
             commits.append(wishlist_path)
         except Exception as e:

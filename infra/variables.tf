@@ -44,6 +44,18 @@ variable "vault_assets_dir" {
   default     = "assets"
 }
 
+variable "vault_liked_path" {
+  description = "Path to liked tweets file in the vault"
+  type        = string
+  default     = "Liked/tweets.md"
+}
+
+variable "vault_liked_assets_dir" {
+  description = "Assets directory for liked tweets in the vault"
+  type        = string
+  default     = "Liked/assets"
+}
+
 variable "lambda_timeout" {
   description = "Lambda function timeout in seconds"
   type        = number

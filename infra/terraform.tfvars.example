@@ -10,9 +10,13 @@ github_owner  = "oteme"
 github_repo   = "my_vault"
 github_branch = "main"
 
-# Vault Paths
+# Vault Paths - Books
 vault_wishlist_path = "wishlist.md"
 vault_assets_dir    = "assets"
+
+# Vault Paths - Liked Tweets
+vault_liked_path       = "Liked/tweets.md"
+vault_liked_assets_dir = "Liked/assets"
 
 # Lambda Configuration
 lambda_timeout     = 60

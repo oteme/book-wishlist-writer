@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {}
 # Lambda deployment package
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/../app"
+  source_dir  = "${path.module}/../dist/lambda"
   output_path = "${path.module}/../dist/lambda.zip"
   excludes    = ["__pycache__", "*.pyc", ".pytest_cache"]
 }
@@ -111,12 +111,14 @@ resource "aws_lambda_function" "app" {
 
   environment {
     variables = {
-      SECRET_NAME         = aws_secretsmanager_secret.app_secrets.name
-      GITHUB_OWNER       = var.github_owner
-      GITHUB_REPO        = var.github_repo
-      GITHUB_BRANCH      = var.github_branch
-      VAULT_WISHLIST_PATH = var.vault_wishlist_path
-      VAULT_ASSETS_DIR   = var.vault_assets_dir
+      SECRET_NAME            = aws_secretsmanager_secret.app_secrets.name
+      GITHUB_OWNER          = var.github_owner
+      GITHUB_REPO           = var.github_repo
+      GITHUB_BRANCH         = var.github_branch
+      VAULT_WISHLIST_PATH   = var.vault_wishlist_path
+      VAULT_ASSETS_DIR      = var.vault_assets_dir
+      VAULT_LIKED_PATH      = var.vault_liked_path
+      VAULT_LIKED_ASSETS_DIR = var.vault_liked_assets_dir
     }
   }
 
@@ -153,6 +155,13 @@ resource "aws_apigatewayv2_route" "ingest" {
   api_id = aws_apigatewayv2_api.api.id
 
   route_key = "POST /ingest"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "liked" {
+  api_id = aws_apigatewayv2_api.api.id
+
+  route_key = "POST /liked"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
