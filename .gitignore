@@ -6,7 +6,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -14,6 +13,8 @@ lib/
 lib64/
 parts/
 sdist/
+dist/lambda
+dist/*.zip
 var/
 wheels/
 share/python-wheels/
@@ -119,3 +120,4 @@ temp/
 
 # Serena MCP
 .serena/
+
