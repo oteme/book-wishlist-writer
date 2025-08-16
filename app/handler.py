@@ -158,7 +158,8 @@ def format_wishlist_entry(entry: WishlistEntry, entry_type: EntryType = EntryTyp
             )
             lines.append(f"![[{image_path}]]")
     
-    # Add separator line
+    # Add separator line with empty line before it
+    lines.append("")
     lines.append("---")
     
     return '\n'.join(lines)

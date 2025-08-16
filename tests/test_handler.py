@@ -104,6 +104,7 @@ class TestFormatWishlistEntry:
             'It\'s amazing!',
             '![[assets/2025-08/123_1.jpg]]',
             '![[assets/2025-08/123_2.jpg]]',
+            '',
             '---'
         ]
         assert result == '\n'.join(expected_lines)
@@ -123,6 +124,7 @@ class TestFormatWishlistEntry:
         expected_lines = [
             'https://x.com/testuser/status/123',
             'Simple tweet',
+            '',
             '---'
         ]
         assert result == '\n'.join(expected_lines)
